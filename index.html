@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#121212" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>象棋对弈辅助</title>
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <div>
+        <h1>象棋对弈辅助</h1>
+        <p>Fairy-Stockfish 15步深度 · 手动模拟对局</p>
+      </div>
+      <div class="status">
+        <div class="status-label">当前回合</div>
+        <div id="turnLabel" class="status-value">红方</div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="board-wrap">
+        <div id="board" class="board">
+          <svg class="board-grid" viewBox="0 0 900 1000" aria-hidden="true">
+            <rect x="0" y="0" width="900" height="1000" rx="26" />
+            <g class="grid-lines">
+              <line x1="100" y1="100" x2="100" y2="900" />
+              <line x1="200" y1="100" x2="200" y2="900" />
+              <line x1="300" y1="100" x2="300" y2="900" />
+              <line x1="400" y1="100" x2="400" y2="900" />
+              <line x1="500" y1="100" x2="500" y2="900" />
+              <line x1="600" y1="100" x2="600" y2="900" />
+              <line x1="700" y1="100" x2="700" y2="900" />
+              <line x1="800" y1="100" x2="800" y2="900" />
+              <line x1="100" y1="100" x2="800" y2="100" />
+              <line x1="100" y1="200" x2="800" y2="200" />
+              <line x1="100" y1="300" x2="800" y2="300" />
+              <line x1="100" y1="400" x2="800" y2="400" />
+              <line x1="100" y1="500" x2="800" y2="500" />
+              <line x1="100" y1="600" x2="800" y2="600" />
+              <line x1="100" y1="700" x2="800" y2="700" />
+              <line x1="100" y1="800" x2="800" y2="800" />
+              <line x1="100" y1="900" x2="800" y2="900" />
+              <line x1="100" y1="100" x2="100" y2="900" />
+              <line x1="800" y1="100" x2="800" y2="900" />
+              <line x1="100" y1="100" x2="800" y2="100" />
+              <line x1="100" y1="900" x2="800" y2="900" />
+              <line x1="400" y1="100" x2="600" y2="300" />
+              <line x1="600" y1="100" x2="400" y2="300" />
+              <line x1="400" y1="700" x2="600" y2="900" />
+              <line x1="600" y1="700" x2="400" y2="900" />
+            </g>
+            <g class="river">
+              <text x="450" y="485">楚 河</text>
+              <text x="450" y="545">漢 界</text>
+            </g>
+          </svg>
+          <svg class="board-overlay" viewBox="0 0 900 1000" aria-hidden="true">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" />
+              </marker>
+            </defs>
+            <line id="lastMoveArrow" x1="0" y1="0" x2="0" y2="0" marker-end="url(#arrow)" />
+          </svg>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <div class="panel-card">
+          <h2>对局控制</h2>
+          <div class="controls">
+            <button id="startRed" class="btn primary">我先走</button>
+            <button id="startBlack" class="btn">对方先走</button>
+            <button id="aiMove" class="btn accent">AI 走棋</button>
+            <button id="undo" class="btn ghost">悔棋</button>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <h2>AI 建议</h2>
+          <div id="suggestion" class="suggestion">等待分析...</div>
+          <div class="hint">建议格式：棋子 (x,y) → (x,y)</div>
+          <div class="engine-status" id="engineStatus">引擎状态：初始化中</div>
+        </div>
+
+        <div class="panel-card">
+          <h2>胜率</h2>
+          <div class="winrate">
+            <span>红方</span>
+            <div class="bar">
+              <div id="redBar" class="bar-fill"></div>
+            </div>
+            <span>黑方</span>
+          </div>
+          <div id="winrateLabel" class="winrate-label">红方 50% · 黑方 50%</div>
+        </div>
+
+        <div class="panel-card">
+          <h2>局面提示</h2>
+          <div id="statusText" class="status-text">点击棋子开始走棋</div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
