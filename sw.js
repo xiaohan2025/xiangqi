@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = "xiangqi-helper-v7-jade-update";
+﻿const CACHE_NAME = "xiangqi-helper-v8-winrate-fix";
 const ASSETS = [
   "/",
   "index.html",
