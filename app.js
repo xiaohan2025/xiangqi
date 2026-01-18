@@ -32,7 +32,6 @@ let legalMoves = [];
 let history = [];
 let aiSuggestion = null;
 let lastMove = null;
-let engineWorker = null;
 let engineReady = false;
 let engineScore = 0;
 
@@ -441,21 +440,31 @@ function parseUciMove(str) {
   return { from: { x: fromFile, y: fromRank }, to: { x: toFile, y: toRank } };
 }
 
-function initEngine() {
+let stockfish = null;
+
+async function initEngine() {
+  engineStatusEl.textContent = "引擎状态：加载中...";
+
   try {
-    engineWorker = new Worker("engine/stockfish.js");
-    engineWorker.onerror = () => {
-      engineStatusEl.textContent = "引擎加载失败";
-      suggestionEl.textContent = "请通过服务器访问（非 file:// 协议）";
-      engineReady = false;
-    };
-    engineWorker.onmessage = (e) => {
-      const line = e.data ? e.data.toString() : "";
+    // 动态加载 Stockfish 脚本
+    const script = document.createElement("script");
+    script.src = "engine/stockfish.js";
+
+    await new Promise((resolve, reject) => {
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+
+    // 调用 Stockfish 工厂函数
+    stockfish = await Stockfish();
+
+    // 添加消息监听器
+    stockfish.addMessageListener((line) => {
       if (line === "uciok") {
-        engineWorker.postMessage("setoption name UCI_Variant value xiangqi");
-        engineWorker.postMessage("setoption name Threads value 1");
-        engineWorker.postMessage("setoption name Hash value 64");
-        engineWorker.postMessage("isready");
+        stockfish.postMessage("setoption name UCI_Variant value xiangqi");
+        stockfish.postMessage("setoption name Threads value 1");
+        stockfish.postMessage("isready");
       } else if (line === "readyok") {
         engineReady = true;
         engineStatusEl.textContent = "引擎状态：Fairy-Stockfish 已就绪";
@@ -480,20 +489,24 @@ function initEngine() {
           }
         }
       }
-    };
-    engineWorker.postMessage("uci");
+    });
+
+    // 启动 UCI 协议
+    stockfish.postMessage("uci");
+
   } catch (err) {
     console.error("引擎加载失败:", err);
-    engineStatusEl.textContent = "引擎状态：加载失败，使用备用 AI";
+    engineStatusEl.textContent = "引擎加载失败";
+    suggestionEl.textContent = "AI 引擎加载失败，请刷新重试";
   }
 }
 
 function requestEngineMove(fen) {
-  if (!engineWorker) return;
-  engineWorker.postMessage("stop");
-  engineWorker.postMessage("ucinewgame");
-  engineWorker.postMessage("position fen " + fen);
-  engineWorker.postMessage(`go depth ${ENGINE_DEPTH} movetime ${ENGINE_MOVETIME}`);
+  if (!stockfish || !engineReady) return;
+  stockfish.postMessage("stop");
+  stockfish.postMessage("ucinewgame");
+  stockfish.postMessage("position fen " + fen);
+  stockfish.postMessage(`go depth ${ENGINE_DEPTH} movetime ${ENGINE_MOVETIME}`);
 }
 
 // ==================== 事件监听 ====================
