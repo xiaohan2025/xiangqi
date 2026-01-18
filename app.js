@@ -527,43 +527,56 @@ function parseUciMove(str) {
 let pikafish = null;
 
 async function initEngine() {
-  engineStatusEl.textContent = "引擎状态：加载皮卡鱼中...";
+  engineStatusEl.textContent = "引擎状态：准备加载...";
+  suggestionEl.textContent = "AI 引擎加载中，请稍候...";
 
-  try {
-    // 动态加载 Pikafish 脚本
-    const script = document.createElement("script");
-    script.src = "engine/pikafish.js";
+  // 延迟加载，让页面先渲染完成
+  setTimeout(async () => {
+    try {
+      engineStatusEl.textContent = "引擎状态：下载引擎文件...";
 
-    await new Promise((resolve, reject) => {
-      script.onload = resolve;
-      script.onerror = reject;
-      document.head.appendChild(script);
-    });
+      // 动态加载 Pikafish 脚本
+      const script = document.createElement("script");
+      script.src = "engine/pikafish.js";
 
-    // 配置 Pikafish
-    const pikafishConfig = {
-      onReceiveStdout: (line) => {
-        handleEngineMessage(line);
-      },
-      onReceiveStderr: (line) => {
-        console.error("Pikafish stderr:", line);
-      },
-      locateFile: (file) => {
-        return "engine/" + file;
-      }
-    };
+      await new Promise((resolve, reject) => {
+        script.onload = resolve;
+        script.onerror = () => reject(new Error("脚本加载失败"));
+        document.head.appendChild(script);
+      });
 
-    // 调用 Pikafish 工厂函数
-    pikafish = await Pikafish(pikafishConfig);
+      engineStatusEl.textContent = "引擎状态：初始化神经网络...";
 
-    // 启动 UCI 协议
-    pikafish.sendCommand("uci");
+      // 配置 Pikafish
+      const pikafishConfig = {
+        onReceiveStdout: (line) => {
+          handleEngineMessage(line);
+        },
+        onReceiveStderr: (line) => {
+          console.error("Pikafish stderr:", line);
+        },
+        locateFile: (file) => {
+          return "engine/" + file;
+        },
+        setStatus: (text) => {
+          if (text) {
+            engineStatusEl.textContent = "引擎状态：" + text;
+          }
+        }
+      };
 
-  } catch (err) {
-    console.error("引擎加载失败:", err);
-    engineStatusEl.textContent = "引擎加载失败";
-    suggestionEl.textContent = "AI 引擎加载失败，请刷新重试";
-  }
+      // 调用 Pikafish 工厂函数
+      pikafish = await Pikafish(pikafishConfig);
+
+      // 启动 UCI 协议
+      pikafish.sendCommand("uci");
+
+    } catch (err) {
+      console.error("引擎加载失败:", err);
+      engineStatusEl.textContent = "引擎加载失败：" + err.message;
+      suggestionEl.textContent = "AI 引擎加载失败，请刷新重试";
+    }
+  }, 100);
 }
 
 function handleEngineMessage(line) {

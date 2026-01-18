@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = "xiangqi-helper-v16-pikafish";
+﻿const CACHE_NAME = "xiangqi-helper-v17-async";
 const ASSETS = [
   "/",
   "index.html",
