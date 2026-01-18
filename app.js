@@ -521,11 +521,17 @@ async function initEngine() {
           engineScore = sc;
         }
       } else if (line.startsWith("bestmove")) {
+        // 只在红方回合处理结果（防止使用旧分析）
+        if (turn !== "red") return;
+
         const moveStr = line.split(" ")[1];
         if (moveStr) {
           const m = parseUciMove(moveStr);
           if (m && board[m.from.y] && board[m.from.y][m.from.x]) {
             const piece = board[m.from.y][m.from.x];
+            // 确保是红方棋子
+            if (getPieceColor(piece) !== "red") return;
+
             const label = pieceLabels[piece] || "?";
             suggestionEl.textContent = `建议：${label} (${m.from.x + 1},${m.from.y + 1}) → (${m.to.x + 1},${m.to.y + 1})`;
             aiSuggestion = { move: m, score: engineScore };
