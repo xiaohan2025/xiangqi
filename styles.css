@@ -86,7 +86,7 @@ body {
   user-select: none;
 }
 
-/* Pieces - 拟物化 3D 风格 */
+/* Pieces - 润泽玉石风格 */
 .piece {
   position: absolute;
   width: 56px;
@@ -94,7 +94,7 @@ body {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 26px;
+  font-size: 28px;
   font-family: "KaiTi", "STKaiti", serif;
   font-weight: 900;
   cursor: pointer;
@@ -102,47 +102,57 @@ body {
   z-index: 10;
   transition: transform 0.2s, box-shadow 0.2s, top 0.2s, left 0.2s;
 
-  /* 通用 3D 效果 */
+  /* 玉石通用效果：温润、微透 */
+  backdrop-filter: blur(4px);
   box-shadow:
-    1px 4px 6px rgba(0, 0, 0, 0.6),
-    /* 底部投影 */
-    inset 0 -4px 4px rgba(0, 0, 0, 0.4),
-    /* 底部内阴影 */
-    inset 0 2px 6px rgba(255, 255, 255, 0.3);
-  /* 顶部高光 */
+    1px 4px 8px rgba(0, 0, 0, 0.5),
+    /* 柔和投影 */
+    inset 0 -5px 10px rgba(0, 0, 0, 0.2),
+    /* 底部厚度 */
+    inset 0 2px 8px rgba(255, 255, 255, 0.7);
+  /* 顶部光泽 */
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* 棋子内部装饰圈 */
+/* 棋子内部装饰圈 - 简化为细微的刻痕 */
 .piece::after {
   content: '';
   position: absolute;
-  inset: 3px;
+  inset: 4px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 0 4px rgba(255, 255, 255, 0.1);
 }
 
 .piece.red {
-  background: radial-gradient(circle at 35% 30%, #e8baae 5%, #c05c48 30%, #7d1f12 90%);
-  color: #5c0f06;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3), 0 -1px 0 rgba(0, 0, 0, 0.2);
-  border: 1px solid #52150d;
+  /* 羊脂白玉 + 红字 */
+  background: radial-gradient(135deg, #fdfdfd 0%, #e8e8e8 60%, #dcdcdc 100%);
+  color: #c00000;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8), 0 -1px 1px rgba(0, 0, 0, 0.1);
+  /* 微微泛红的玉质感 */
+  box-shadow:
+    2px 5px 10px rgba(0, 0, 0, 0.4),
+    inset 0 -3px 8px rgba(180, 100, 100, 0.1),
+    inset 0 3px 10px rgba(255, 255, 255, 0.9);
 }
 
 .piece.black {
-  background: radial-gradient(circle at 35% 30%, #7d7d7d 5%, #464646 30%, #1a1a1a 90%);
-  color: #111;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2), 0 -1px 0 rgba(0, 0, 0, 0.5);
-  border: 1px solid #000;
+  /* 墨玉/深青玉 + 黑字 */
+  background: radial-gradient(135deg, #4a5a5a 0%, #2f3a3a 60%, #1a2020 100%);
+  color: #e0e0e0;
+  text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.8), 0 1px 1px rgba(255, 255, 255, 0.1);
+  box-shadow:
+    2px 5px 10px rgba(0, 0, 0, 0.5),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.5),
+    inset 0 3px 10px rgba(255, 255, 255, 0.2);
 }
 
 .piece:hover {
   transform: translate(-50%, -50%) scale(1.1);
   z-index: 20;
   box-shadow:
-    0 10px 20px rgba(0, 0, 0, 0.5),
-    inset 0 -4px 4px rgba(0, 0, 0, 0.4),
-    inset 0 2px 6px rgba(255, 255, 255, 0.4);
+    0 15px 30px rgba(0, 0, 0, 0.4),
+    inset 0 0 15px rgba(255, 255, 255, 0.4);
 }
 
 .piece.selected {

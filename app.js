@@ -490,6 +490,7 @@ async function initEngine() {
       if (line === "uciok") {
         stockfish.postMessage("setoption name UCI_Variant value xiangqi");
         stockfish.postMessage("setoption name Threads value 1");
+        stockfish.postMessage("setoption name Contempt value 50"); // 杀手模式：更激进，速战速决
         stockfish.postMessage("isready");
       } else if (line === "readyok") {
         engineReady = true;
