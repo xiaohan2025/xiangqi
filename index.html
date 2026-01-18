@@ -15,62 +15,63 @@
 <body>
   <div class="app">
     <header class="app-header">
-      <div>
-        <h1>象棋对弈辅助</h1>
-        <p>Fairy-Stockfish 15步深度 · 手动模拟对局</p>
-      </div>
-      <div class="status">
-        <div class="status-row">
-          <div class="status-label">当前回合</div>
-          <div id="turnLabel" class="status-value">红方</div>
-        </div>
-        <div class="status-row">
-          <div class="status-label">你方</div>
-          <div id="playerLabel" class="status-value muted">红方</div>
-        </div>
-      </div>
+      <h1>中国象棋辅助工具</h1>
     </header>
 
     <main class="layout">
       <section class="board-wrap">
         <div id="board" class="board">
           <svg class="board-grid" viewBox="0 0 900 1000" aria-hidden="true">
-            <rect x="0" y="0" width="900" height="1000" rx="26" />
+            <rect x="0" y="0" width="900" height="1000" rx="20" fill="#1e1e1e" />
             <g class="grid-lines">
-              <line x1="100" y1="100" x2="100" y2="900" />
-              <line x1="200" y1="100" x2="200" y2="900" />
-              <line x1="300" y1="100" x2="300" y2="900" />
-              <line x1="400" y1="100" x2="400" y2="900" />
-              <line x1="500" y1="100" x2="500" y2="900" />
-              <line x1="600" y1="100" x2="600" y2="900" />
-              <line x1="700" y1="100" x2="700" y2="900" />
-              <line x1="800" y1="100" x2="800" y2="900" />
-              <line x1="100" y1="100" x2="800" y2="100" />
-              <line x1="100" y1="200" x2="800" y2="200" />
-              <line x1="100" y1="300" x2="800" y2="300" />
-              <line x1="100" y1="400" x2="800" y2="400" />
-              <line x1="100" y1="500" x2="800" y2="500" />
-              <line x1="100" y1="600" x2="800" y2="600" />
-              <line x1="100" y1="700" x2="800" y2="700" />
-              <line x1="100" y1="800" x2="800" y2="800" />
-              <line x1="100" y1="900" x2="800" y2="900" />
-              <line x1="100" y1="100" x2="100" y2="900" />
-              <line x1="800" y1="100" x2="800" y2="900" />
-              <line x1="100" y1="100" x2="800" y2="100" />
-              <line x1="100" y1="900" x2="800" y2="900" />
-              <line x1="400" y1="100" x2="600" y2="300" />
-              <line x1="600" y1="100" x2="400" y2="300" />
-              <line x1="400" y1="700" x2="600" y2="900" />
-              <line x1="600" y1="700" x2="400" y2="900" />
+              <!-- Horizontal Lines -->
+              <line x1="50" y1="50" x2="850" y2="50" />
+              <line x1="50" y1="150" x2="850" y2="150" />
+              <line x1="50" y1="250" x2="850" y2="250" />
+              <line x1="50" y1="350" x2="850" y2="350" />
+              <line x1="50" y1="450" x2="850" y2="450" />
+              <line x1="50" y1="550" x2="850" y2="550" />
+              <line x1="50" y1="650" x2="850" y2="650" />
+              <line x1="50" y1="750" x2="850" y2="750" />
+              <line x1="50" y1="850" x2="850" y2="850" />
+              <line x1="50" y1="950" x2="850" y2="950" />
+              
+              <!-- Vertical Lines (Outer) -->
+              <line x1="50" y1="50" x2="50" y2="950" />
+              <line x1="850" y1="50" x2="850" y2="950" />
+
+              <!-- Vertical Lines (Inner Top) -->
+              <line x1="150" y1="50" x2="150" y2="450" />
+              <line x1="250" y1="50" x2="250" y2="450" />
+              <line x1="350" y1="50" x2="350" y2="450" />
+              <line x1="450" y1="50" x2="450" y2="450" />
+              <line x1="550" y1="50" x2="550" y2="450" />
+              <line x1="650" y1="50" x2="650" y2="450" />
+              <line x1="750" y1="50" x2="750" y2="450" />
+
+              <!-- Vertical Lines (Inner Bottom) -->
+              <line x1="150" y1="550" x2="150" y2="950" />
+              <line x1="250" y1="550" x2="250" y2="950" />
+              <line x1="350" y1="550" x2="350" y2="950" />
+              <line x1="450" y1="550" x2="450" y2="950" />
+              <line x1="550" y1="550" x2="550" y2="950" />
+              <line x1="650" y1="550" x2="650" y2="950" />
+              <line x1="750" y1="550" x2="750" y2="950" />
+
+              <!-- Diagonals -->
+              <line x1="350" y1="50" x2="550" y2="250" />
+              <line x1="550" y1="50" x2="350" y2="250" />
+              <line x1="350" y1="750" x2="550" y2="950" />
+              <line x1="550" y1="750" x2="350" y2="950" />
             </g>
             <g class="river">
-              <text x="450" y="485">楚 河</text>
-              <text x="450" y="545">漢 界</text>
+              <text x="250" y="500" class="river-text">楚 河</text>
+              <text x="650" y="500" class="river-text">漢 界</text>
             </g>
           </svg>
           <svg class="board-overlay" viewBox="0 0 900 1000" aria-hidden="true">
             <defs>
-              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                 <path d="M 0 0 L 10 5 L 0 10 z" />
               </marker>
             </defs>
@@ -80,39 +81,45 @@
       </section>
 
       <aside class="panel">
-        <div class="panel-card">
-          <h2>对局控制</h2>
-          <div class="controls">
-            <button id="startRed" class="btn primary">我先走</button>
-            <button id="startBlack" class="btn">对方先走</button>
-            <button id="aiMove" class="btn accent">AI 走棋</button>
-            <button id="undo" class="btn ghost">悔棋</button>
+        <div class="panel-section">
+          <label class="section-label">谁先走?</label>
+          <div class="toggle-group">
+            <button id="startRed" class="btn toggle active">我先走</button>
+            <button id="startBlack" class="btn toggle">对方先走</button>
+          </div>
+          <p class="subtext">你执红方，对方执黑方</p>
+        </div>
+
+        <div class="panel-section">
+          <label class="section-label">当前状态</label>
+          <div class="status-card">
+            <h2 id="statusText">红方走棋</h2>
           </div>
         </div>
 
-        <div class="panel-card">
-          <h2>AI 建议</h2>
-          <div id="suggestion" class="suggestion">等待分析...</div>
-          <div class="hint">建议格式：棋子 (x,y) → (x,y)</div>
-          <div class="engine-status" id="engineStatus">引擎状态：初始化中</div>
+        <div class="panel-section">
+          <div class="ai-box">
+             <div id="suggestion">AI 建议：等待分析...</div>
+          </div>
         </div>
 
-        <div class="panel-card">
-          <h2>胜率</h2>
-          <div class="winrate">
-            <span>红方</span>
+        <div class="panel-section">
+          <label class="section-label">局面评估</label>
+          <div class="winrate-container">
             <div class="bar">
-              <div id="redBar" class="bar-fill"></div>
+              <div id="redBar" class="bar-fill" style="width: 50%"></div>
             </div>
-            <span>黑方</span>
+            <div id="winrateLabel" class="winrate-text">红方 50% &nbsp; 黑方 50%</div>
           </div>
-          <div id="winrateLabel" class="winrate-label">红方 50% · 黑方 50%</div>
         </div>
 
-        <div class="panel-card">
-          <h2>局面提示</h2>
-          <div id="statusText" class="status-text">点击棋子开始走棋</div>
+        <div class="action-buttons">
+          <button id="restartBtn" class="btn primary large">重新开始</button>
+          <button id="undo" class="btn secondary">悔棋</button>
+          <button id="aiMove" class="btn secondary">AI 帮我走</button>
         </div>
+        
+        <div id="engineStatus" class="engine-status-tiny">引擎状态：初始化中</div>
       </aside>
     </main>
   </div>
