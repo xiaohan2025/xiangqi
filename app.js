@@ -3,6 +3,7 @@ const suggestionEl = document.getElementById("suggestion");
 const engineStatusEl = document.getElementById("engineStatus");
 const statusTextEl = document.getElementById("statusText");
 const turnLabelEl = document.getElementById("turnLabel");
+const playerLabelEl = document.getElementById("playerLabel");
 const winrateLabelEl = document.getElementById("winrateLabel");
 const redBarEl = document.getElementById("redBar");
 const lastMoveArrow = document.getElementById("lastMoveArrow");
@@ -11,6 +12,10 @@ const startRedBtn = document.getElementById("startRed");
 const startBlackBtn = document.getElementById("startBlack");
 const aiMoveBtn = document.getElementById("aiMove");
 const undoBtn = document.getElementById("undo");
+
+const ENGINE_DEPTH = 12;
+const ENGINE_MOVETIME = 8000;
+const FALLBACK_DEPTH = 2;
 
 const pieceLabels = {
   r: "车",
@@ -41,11 +46,13 @@ const pieceValues = {
 
 let board = createInitialBoard();
 let turn = "red";
+const playerSide = "red";
 let selected = null;
 let legalMoves = [];
 let history = [];
 let aiSuggestion = null;
 let lastMove = null;
+let autoMoveOnSuggestion = false;
 let engineWorker = null;
 let engineReady = false;
 let engineScore = null;
@@ -344,6 +351,16 @@ function movePiece(from, to) {
   return true;
 }
 
+function getBoardMetrics() {
+  const rect = boardEl.getBoundingClientRect();
+  const marginX = rect.width / 9;
+  const marginY = rect.height / 10;
+  const cellX = (rect.width - marginX * 2) / 8;
+  const cellY = (rect.height - marginY * 2) / 9;
+  const cellSize = Math.min(cellX, cellY);
+  return { rect, marginX, marginY, cellX, cellY, cellSize };
+}
+
 function handleBoardClick(event) {
   const pieceEl = event.target.closest(".piece");
   if (pieceEl) {
@@ -380,27 +397,24 @@ function handleBoardClick(event) {
 }
 
 function getBoardPosition(event) {
-  const rect = boardEl.getBoundingClientRect();
+  const { rect, marginX, marginY, cellX, cellY, cellSize } = getBoardMetrics();
   const x = event.clientX - rect.left;
   const y = event.clientY - rect.top;
-  const cell = rect.width / 9;
-  const margin = cell;
-  const col = Math.round((x - margin) / cell);
-  const row = Math.round((y - margin) / cell);
+  const col = Math.round((x - marginX) / cellX);
+  const row = Math.round((y - marginY) / cellY);
   if (!inBounds(col, row)) return null;
-  const targetX = margin + col * cell;
-  const targetY = margin + row * cell;
+  const targetX = marginX + col * cellX;
+  const targetY = marginY + row * cellY;
   const dist = Math.hypot(targetX - x, targetY - y);
-  if (dist > cell * 0.45) return null;
+  if (dist > cellSize * 0.48) return null;
   return { x: col, y: row };
 }
 
 function renderBoard() {
   boardEl.querySelectorAll(".piece, .legal-dot").forEach((el) => el.remove());
 
-  const rect = boardEl.getBoundingClientRect();
-  const cell = rect.width / 9;
-  boardEl.style.setProperty("--cell", `${cell}px`);
+  const { cellSize } = getBoardMetrics();
+  boardEl.style.setProperty("--cell", `${cellSize}px`);
 
   for (let y = 0; y < 10; y += 1) {
     for (let x = 0; x < 9; x += 1) {
@@ -435,12 +449,10 @@ function renderBoard() {
 }
 
 function getPixelPosition(x, y) {
-  const rect = boardEl.getBoundingClientRect();
-  const cell = rect.width / 9;
-  const margin = cell;
+  const { marginX, marginY, cellX, cellY } = getBoardMetrics();
   return {
-    x: margin + x * cell,
-    y: margin + y * cell,
+    x: marginX + x * cellX,
+    y: marginY + y * cellY,
   };
 }
 
@@ -461,14 +473,16 @@ function renderLastMoveArrow() {
 
 function updateStatus() {
   turnLabelEl.textContent = turn === "red" ? "红方" : "黑方";
-  let text = "点击棋子开始走棋";
+  playerLabelEl.textContent = "红方";
+  let text = turn === "red" ? "轮到你走" : "轮到对方走";
   if (isInCheck(board, turn)) {
-    text = `${turn === "red" ? "红方" : "黑方"}被将军`;
+    text = `${turn === "red" ? "你" : "对方"}被将军`;
   }
   if (isCheckmate(board, turn)) {
-    text = `${turn === "red" ? "红方" : "黑方"}被将死`;
+    text = `${turn === "red" ? "你" : "对方"}被将死`;
   }
   statusTextEl.textContent = text;
+  aiMoveBtn.disabled = turn !== "red";
 }
 
 function setSuggestion(move, score) {
@@ -481,6 +495,10 @@ function setSuggestion(move, score) {
   suggestionEl.textContent = `建议：${label} (${move.from.x + 1},${move.from.y + 1}) → (${move.to.x + 1},${move.to.y + 1})`;
   aiSuggestion = { move, score };
   renderLastMoveArrow();
+  if (autoMoveOnSuggestion && turn === "red") {
+    autoMoveOnSuggestion = false;
+    handleAiMove();
+  }
 }
 
 function updateWinrate(scoreForRed) {
@@ -492,13 +510,21 @@ function updateWinrate(scoreForRed) {
 
 function updateAnalysis() {
   updateStatus();
+  updateWinrate(evaluateBoardLight(board));
+
+  if (turn !== "red") {
+    suggestionEl.textContent = "等待对方走棋...";
+    aiSuggestion = null;
+    renderLastMoveArrow();
+    return;
+  }
+
   const fen = boardToFen(board, turn);
   if (engineReady) {
     requestEngineMove(fen);
   } else {
-    const suggestion = findBestMove(board, turn, 3);
+    const suggestion = findBestMove(board, turn, FALLBACK_DEPTH);
     setSuggestion(suggestion.move, suggestion.score);
-    updateWinrate(suggestion.score);
   }
 }
 
@@ -556,6 +582,8 @@ function initEngine() {
     const line = event.data ? event.data.toString() : "";
     if (line === "uciok") {
       engineWorker.postMessage("setoption name UCI_Variant value xiangqi");
+      engineWorker.postMessage("setoption name Threads value 1");
+      engineWorker.postMessage("setoption name Hash value 64");
       engineWorker.postMessage("isready");
     } else if (line === "readyok") {
       engineReady = true;
@@ -577,6 +605,7 @@ function initEngine() {
       const moveText = parts[1];
       const parsed = parseUciMove(moveText);
       if (parsed) {
+        if (turn !== "red") return;
         const scoreForRed = turn === "red" ? engineScore ?? 0 : -(engineScore ?? 0);
         setSuggestion(parsed, scoreForRed);
         updateWinrate(scoreForRed);
@@ -592,10 +621,10 @@ function requestEngineMove(fen) {
   if (engineTimer) clearTimeout(engineTimer);
   engineWorker.postMessage("ucinewgame");
   engineWorker.postMessage(`position fen ${fen}`);
-  engineWorker.postMessage("go depth 15 movetime 30000");
+  engineWorker.postMessage(`go depth ${ENGINE_DEPTH} movetime ${ENGINE_MOVETIME}`);
   engineTimer = setTimeout(() => {
     engineWorker.postMessage("stop");
-  }, 30000);
+  }, ENGINE_MOVETIME + 2000);
 }
 
 function evaluateBoard(boardState) {
@@ -612,6 +641,19 @@ function evaluateBoard(boardState) {
   if (isInCheck(boardState, "black")) score += 300;
   if (isCheckmate(boardState, "red")) score -= 100000;
   if (isCheckmate(boardState, "black")) score += 100000;
+  return score;
+}
+
+function evaluateBoardLight(boardState) {
+  let score = 0;
+  for (let y = 0; y < 10; y += 1) {
+    for (let x = 0; x < 9; x += 1) {
+      const piece = boardState[y][x];
+      if (!piece) continue;
+      const value = pieceValues[piece.toLowerCase()] || 0;
+      score += getPieceColor(piece) === "red" ? value : -value;
+    }
+  }
   return score;
 }
 
@@ -700,21 +742,28 @@ function handleAiMove() {
   movePiece(move.from, move.to);
 }
 
-function resetGame(startingSide) {
+function resetGame(startingTurn) {
   board = createInitialBoard();
-  turn = startingSide;
+  turn = startingTurn;
   history = [];
   selected = null;
   legalMoves = [];
   aiSuggestion = null;
   lastMove = null;
+  autoMoveOnSuggestion = false;
   updateStatus();
   renderBoard();
   updateAnalysis();
 }
 
-startRedBtn.addEventListener("click", () => resetGame("red"));
-startBlackBtn.addEventListener("click", () => resetGame("black"));
+startRedBtn.addEventListener("click", () => {
+  autoMoveOnSuggestion = true;
+  resetGame("red");
+});
+startBlackBtn.addEventListener("click", () => {
+  autoMoveOnSuggestion = false;
+  resetGame("black");
+});
 undoBtn.addEventListener("click", handleUndo);
 aiMoveBtn.addEventListener("click", handleAiMove);
 boardEl.addEventListener("click", handleBoardClick);
