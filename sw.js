@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = "xiangqi-helper-v3-mobile-update";
+﻿const CACHE_NAME = "xiangqi-helper-v7-jade-update";
 const ASSETS = [
   "/",
   "index.html",
@@ -14,6 +14,7 @@ const ASSETS = [
 ];
 
 self.addEventListener("install", (event) => {
+  self.skipWaiting(); // 强制立即激活新 SW
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
@@ -22,7 +23,10 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
+      Promise.all([
+        ...keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)),
+        self.clients.claim() // 立即接管所有页面
+      ])
     )
   );
 });
