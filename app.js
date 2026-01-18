@@ -432,8 +432,10 @@ function boardToFen(b, side) {
 
 function parseUciMove(str) {
   if (!str) return null;
-  // UCI 坐标格式: 列(a-i) + 行(0-9) + 列(a-i) + 行(0-9)
-  // 例如: "c1e3" 或 "b10c8"（虽然象棋通常是0-9，但为安全起见支持两位）
+  // UCI 坐标格式: 列(a-i) + 行(1-10)
+  // UCI: a1 = 左下角(红方车位置), i10 = 右上角(黑方车位置)
+  // 我们代码: y=0 是顶部(黑方/rank 10), y=9 是底部(红方/rank 1)
+  // 转换: y = 10 - rank
   const match = str.match(/^([a-i])(\d+)([a-i])(\d+)/);
   if (!match) return null;
   const fromFile = files.indexOf(match[1]);
@@ -441,8 +443,12 @@ function parseUciMove(str) {
   const toFile = files.indexOf(match[3]);
   const toRank = parseInt(match[4]);
   if ([fromFile, toFile].some(v => v < 0)) return null;
-  if ([fromRank, toRank].some(v => isNaN(v) || v < 0 || v > 9)) return null;
-  return { from: { x: fromFile, y: fromRank }, to: { x: toFile, y: toRank } };
+  if ([fromRank, toRank].some(v => isNaN(v) || v < 1 || v > 10)) return null;
+  // 转换 UCI rank 到我们的 y 坐标
+  return {
+    from: { x: fromFile, y: 10 - fromRank },
+    to: { x: toFile, y: 10 - toRank }
+  };
 }
 
 let stockfish = null;
