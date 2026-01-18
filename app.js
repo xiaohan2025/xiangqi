@@ -307,15 +307,33 @@ function handleAiMove() {
     suggestionEl.textContent = "请等对方走棋...";
     return;
   }
-  if (!aiSuggestion || !aiSuggestion.move) {
-    suggestionEl.textContent = "请等待 AI 分析完成...";
+
+  if (!engineReady) {
+    suggestionEl.textContent = "引擎还在初始化，请稍等...";
     return;
   }
-  const move = aiSuggestion.move;
-  const piece = board[move.from.y][move.from.x];
-  if (piece && getPieceColor(piece) === "red") {
-    movePiece(move.from, move.to);
+
+  if (!aiSuggestion || !aiSuggestion.move) {
+    suggestionEl.textContent = "AI 正在思考，请稍等...";
+    return;
   }
+
+  const move = aiSuggestion.move;
+  const piece = board[move.from.y]?.[move.from.x];
+
+  if (!piece) {
+    suggestionEl.textContent = "走法解析错误，请重新分析";
+    updateAnalysis(); // 重新分析
+    return;
+  }
+
+  if (getPieceColor(piece) !== "red") {
+    suggestionEl.textContent = "走法异常，请重新分析";
+    updateAnalysis();
+    return;
+  }
+
+  movePiece(move.from, move.to);
 }
 
 // ==================== 渲染 ====================
