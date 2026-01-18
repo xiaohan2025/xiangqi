@@ -511,10 +511,21 @@ body {
     max-width: none;
   }
 
+  /* 手机端棋子：保留玉石质感，调整尺寸 */
   .piece {
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  /* AI 风格切换按钮 - 手机端紧凑版 */
+  .style-toggle {
+    gap: 2px;
+  }
+
+  .style-toggle .btn.toggle {
+    padding: 6px 4px;
+    font-size: 11px;
   }
 
   .legal-dot {
