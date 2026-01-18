@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = "xiangqi-helper-v12-mobile-trace";
+﻿const CACHE_NAME = "xiangqi-helper-v13-final";
 const ASSETS = [
   "/",
   "index.html",
