@@ -297,13 +297,18 @@ function resetGame() {
 }
 
 function handleAiMove() {
+  // AI 只为红方服务
+  if (turn !== "red") {
+    suggestionEl.textContent = "请等对方走棋...";
+    return;
+  }
   if (!aiSuggestion || !aiSuggestion.move) {
     suggestionEl.textContent = "请等待 AI 分析完成...";
     return;
   }
   const move = aiSuggestion.move;
   const piece = board[move.from.y][move.from.x];
-  if (piece && getPieceColor(piece) === turn) {
+  if (piece && getPieceColor(piece) === "red") {
     movePiece(move.from, move.to);
   }
 }
@@ -402,9 +407,18 @@ function updateWinrate(scoreRed) {
 function updateAnalysis() {
   aiSuggestion = null;
 
+  // AI 只为红方服务
+  if (turn !== "red") {
+    suggestionEl.textContent = "等待对方走棋...";
+    aiMoveBtn.disabled = true;
+    return;
+  }
+
+  aiMoveBtn.disabled = false;
+
   if (engineReady) {
     suggestionEl.textContent = "AI 思考中...";
-    const fen = boardToFen(board, turn);
+    const fen = boardToFen(board, "red"); // 始终以红方视角分析
     requestEngineMove(fen);
   } else {
     suggestionEl.textContent = "等待引擎初始化...";
