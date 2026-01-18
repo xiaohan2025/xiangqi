@@ -172,12 +172,12 @@ function getPseudoMoves(boardState, from) {
   } else if (type === "b") {
     const steps = [{ dx: 2, dy: 2 }, { dx: 2, dy: -2 }, { dx: -2, dy: 2 }, { dx: -2, dy: -2 }];
     for (const s of steps) {
-      const eyeX = from.x + s.dx / 2, eyeY = from.y + s.dy / 2;
-      if (boardState[eyeY][eyeX]) continue; // 塞象眼
       const x = from.x + s.dx, y = from.y + s.dy;
       if (!inBounds(x, y)) continue;
       if (isRed && y < 5) continue; // 相不能过河
       if (!isRed && y > 4) continue; // 象不能过河
+      const eyeX = from.x + s.dx / 2, eyeY = from.y + s.dy / 2;
+      if (boardState[eyeY][eyeX]) continue; // 塞象眼
       pushMove(boardState, moves, { x, y }, color);
     }
   } else if (type === "a") {
