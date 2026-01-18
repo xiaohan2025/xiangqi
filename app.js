@@ -14,7 +14,7 @@ const undoBtn = document.getElementById("undo");
 
 // 设备检测：平板/手机用较浅深度和更长思考时间
 const isMobile = window.innerWidth <= 1024;
-const ENGINE_DEPTH = isMobile ? 15 : 17; // 手机平板15层，电脑17层
+const ENGINE_DEPTH = isMobile ? 16 : 17; // 手机平板16层，电脑17层
 const ENGINE_MOVETIME = isMobile ? 20000 : 10000; // 手机平板20秒，电脑10秒
 
 
@@ -38,6 +38,7 @@ let aiSuggestion = null;
 let lastMove = null;
 let engineReady = false;
 let engineScore = 0;
+let moveHistory = []; // UCI格式的走法历史，用于避免循环
 
 const files = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
 
@@ -259,6 +260,11 @@ function movePiece(from, to) {
   const piece = board[from.y][from.x];
   if (!piece) return false;
   history.push({ board: cloneBoard(board), turn, lastMove });
+
+  // 记录UCI格式的走法（用于避免循环）
+  const uciMove = files[from.x] + (10 - from.y) + files[to.x] + (10 - to.y);
+  moveHistory.push(uciMove);
+
   board[to.y][to.x] = piece;
   board[from.y][from.x] = null;
   lastMove = { from, to };
@@ -275,6 +281,7 @@ function movePiece(from, to) {
 function handleUndo() {
   const prev = history.pop();
   if (!prev) return;
+  moveHistory.pop(); // 同步删除走法历史
   board = cloneBoard(prev.board);
   turn = prev.turn;
   lastMove = prev.lastMove;
@@ -290,6 +297,7 @@ function resetGame() {
   board = createInitialBoard();
   turn = nextGameTurn;
   history = [];
+  moveHistory = []; // 清空走法历史
   selected = null;
   legalMoves = [];
   aiSuggestion = null;
@@ -556,7 +564,15 @@ function requestEngineMove(fen) {
   if (!stockfish || !engineReady) return;
   stockfish.postMessage("stop");
   stockfish.postMessage("ucinewgame");
-  stockfish.postMessage("position fen " + fen);
+
+  // 使用开局FEN + 历史走法，让引擎能检测重复局面
+  if (moveHistory.length > 0) {
+    const startFen = "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1";
+    stockfish.postMessage("position fen " + startFen + " moves " + moveHistory.join(" "));
+  } else {
+    stockfish.postMessage("position fen " + fen);
+  }
+
   stockfish.postMessage(`go depth ${ENGINE_DEPTH} movetime ${ENGINE_MOVETIME}`);
 }
 

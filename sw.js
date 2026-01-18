@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = "xiangqi-helper-v13-final";
+﻿const CACHE_NAME = "xiangqi-helper-v14-anti-loop";
 const ASSETS = [
   "/",
   "index.html",
