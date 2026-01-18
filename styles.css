@@ -6,7 +6,7 @@
   --muted: #888;
   --green: #42d27c;
   --green-hover: #36b068;
-  --red: #ff5252;
+  --red: #ff6b6b;
   --black: #ddd;
   --card-bg: #222;
   --border: #333;
@@ -59,7 +59,8 @@ body {
 
 .board {
   position: relative;
-  width: min(100%, 650px); /* 限制最大宽度 */
+  width: min(100%, 650px);
+  /* 限制最大宽度 */
   aspect-ratio: 9 / 10;
   background: var(--board);
   border-radius: 8px;
@@ -104,7 +105,7 @@ body {
   opacity: 0.8;
 }
 
-#lastMoveArrow + marker path {
+#lastMoveArrow+marker path {
   fill: var(--green);
 }
 
@@ -119,7 +120,7 @@ body {
   place-items: center;
   font-size: 24px;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   cursor: pointer;
   user-select: none;
   background: #333;
@@ -214,7 +215,7 @@ body {
 }
 
 .status-card {
-  /* Minimal styling as per image */
+  padding: 4px 0;
 }
 
 #statusText {
@@ -313,6 +314,7 @@ body {
   .layout {
     grid-template-columns: 1fr;
   }
+
   .panel {
     width: 100%;
     max-width: 500px;
