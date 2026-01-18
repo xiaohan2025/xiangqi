@@ -12,8 +12,8 @@ const restartBtn = document.getElementById("restartBtn");
 const aiMoveBtn = document.getElementById("aiMove");
 const undoBtn = document.getElementById("undo");
 
-const ENGINE_DEPTH = 16;
-const ENGINE_MOVETIME = 30000;
+const ENGINE_DEPTH = 17;
+const ENGINE_MOVETIME = 20000; // 20秒
 
 
 
@@ -491,7 +491,7 @@ async function initEngine() {
     stockfish.addMessageListener((line) => {
       if (line === "uciok") {
         stockfish.postMessage("setoption name UCI_Variant value xiangqi");
-        stockfish.postMessage("setoption name Threads value 1");
+        stockfish.postMessage("setoption name Threads value 4");
         stockfish.postMessage("setoption name Contempt value 50"); // 杀手模式：更激进，速战速决
         stockfish.postMessage("isready");
       } else if (line === "readyok") {
