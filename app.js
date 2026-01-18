@@ -641,11 +641,19 @@ function setAiStyle(style) {
   document.getElementById("styleBalanced").classList.toggle("active", style === "balanced");
   document.getElementById("styleDefensive").classList.toggle("active", style === "defensive");
 
-  // 如果引擎已就绪，立即更新设置并重新分析
+  // 如果引擎已就绪，更新设置
   if (stockfish && engineReady) {
     stockfish.postMessage(`setoption name Contempt value ${AI_STYLES[style].contempt}`);
-    suggestionEl.textContent = `已切换为「${AI_STYLES[style].name}」模式，重新分析中...`;
-    updateAnalysis();
+
+    // 开局阶段（没走过棋）：只切换模式，不重新分析，保持 50%
+    if (history.length === 0) {
+      suggestionEl.textContent = `已切换为「${AI_STYLES[style].name}」模式`;
+      updateWinrate(0); // 保持 50%
+    } else {
+      // 已经开始下棋：重新分析
+      suggestionEl.textContent = `已切换为「${AI_STYLES[style].name}」模式，重新分析中...`;
+      updateAnalysis();
+    }
   }
 }
 
