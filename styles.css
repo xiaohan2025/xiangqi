@@ -549,6 +549,12 @@ body {
     font-size: 13px;
   }
 
+  /* 手机端适配：移动轨迹高亮框 */
+  .move-trace {
+    width: 32px;
+    height: 32px;
+  }
+
 
 
   .legal-dot {
