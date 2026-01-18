@@ -12,7 +12,7 @@ const restartBtn = document.getElementById("restartBtn");
 const aiMoveBtn = document.getElementById("aiMove");
 const undoBtn = document.getElementById("undo");
 
-const ENGINE_DEPTH = 15;
+const ENGINE_DEPTH = 17;
 const ENGINE_MOVETIME = 30000;
 
 const pieceLabels = {
