@@ -13,7 +13,9 @@ const aiMoveBtn = document.getElementById("aiMove");
 const undoBtn = document.getElementById("undo");
 
 const ENGINE_DEPTH = 17;
-const ENGINE_MOVETIME = 10000; // 10秒
+// 设备检测：平板/手机用更长的思考时间
+const isMobile = window.innerWidth <= 1024;
+const ENGINE_MOVETIME = isMobile ? 15000 : 10000; // 手机平板15秒，电脑10秒
 
 
 
@@ -404,21 +406,22 @@ function updateWinrate(scoreRed) {
 function updateAnalysis() {
   aiSuggestion = null;
 
-  // AI 只为红方服务
-  if (turn !== "red") {
-    suggestionEl.textContent = "等待对方走棋...";
-    aiMoveBtn.disabled = true;
-    return;
-  }
-
-  aiMoveBtn.disabled = false;
-
+  // 每次走棋后都分析（保证胜率精准）
   if (engineReady) {
-    suggestionEl.textContent = "AI 思考中...";
     const fen = boardToFen(board, "red"); // 始终以红方视角分析
     requestEngineMove(fen);
+
+    // AI 建议只给红方看
+    if (turn === "red") {
+      suggestionEl.textContent = "AI 思考中...";
+      aiMoveBtn.disabled = false;
+    } else {
+      suggestionEl.textContent = "分析局面中...";
+      aiMoveBtn.disabled = true;
+    }
   } else {
     suggestionEl.textContent = "等待引擎初始化...";
+    aiMoveBtn.disabled = true;
   }
 }
 
@@ -486,7 +489,7 @@ async function initEngine() {
       if (line === "uciok") {
         stockfish.postMessage("setoption name UCI_Variant value xiangqi");
         stockfish.postMessage("setoption name Threads value 4");
-        stockfish.postMessage("setoption name Contempt value 50"); // 杀手模式：更激进，速战速决
+        stockfish.postMessage("setoption name Contempt value 20"); // 精准评估 + 适度激进
         stockfish.postMessage("isready");
       } else if (line === "readyok") {
         engineReady = true;
