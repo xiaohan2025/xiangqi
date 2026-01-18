@@ -177,6 +177,37 @@ body {
   z-index: 5;
 }
 
+/* 移动轨迹高亮 */
+.move-trace {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background-color: rgba(255, 255, 0, 0.4);
+  /* 半透明黄色 */
+  border-radius: 8px;
+  /* 稍微倒角 */
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
+  /* 在棋子之下，网格之上 */
+  box-shadow: 0 0 10px rgba(255, 255, 0, 0.6);
+  animation: pulse-trace 2s infinite;
+}
+
+@keyframes pulse-trace {
+  0% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+
+  100% {
+    opacity: 0.3;
+  }
+}
+
 /* Panel */
 .panel {
   display: flex;

@@ -4,7 +4,7 @@ const engineStatusEl = document.getElementById("engineStatus");
 const statusTextEl = document.getElementById("statusText");
 const redBarEl = document.getElementById("redBar");
 const winrateLabelEl = document.getElementById("winrateLabel");
-const lastMoveArrow = document.getElementById("lastMoveArrow");
+
 
 const startRedBtn = document.getElementById("startRed");
 const startBlackBtn = document.getElementById("startBlack");
@@ -342,7 +342,19 @@ function getBoardCoords(event) {
 }
 
 function renderBoard() {
-  boardEl.querySelectorAll(".piece, .legal-dot").forEach(el => el.remove());
+  boardEl.querySelectorAll(".piece, .legal-dot, .move-trace").forEach(el => el.remove());
+
+  // 渲染移动轨迹高亮 (起点和终点)
+  if (lastMove) {
+    [lastMove.from, lastMove.to].forEach(pos => {
+      const trace = document.createElement("div");
+      trace.className = "move-trace";
+      const p = getPixelPosition(pos.x, pos.y);
+      trace.style.left = p.x;
+      trace.style.top = p.y;
+      boardEl.appendChild(trace);
+    });
+  }
 
   // 渲染棋子
   for (let y = 0; y < 10; y++) {
@@ -363,7 +375,7 @@ function renderBoard() {
     }
   }
 
-  // 渲染可走位置的绿色点 (legalMoves 是 {x, y} 格式)
+  // 渲染可走位置的绿色点
   for (const move of legalMoves) {
     const dot = document.createElement("div");
     dot.className = "legal-dot";
@@ -372,24 +384,6 @@ function renderBoard() {
     dot.style.top = pos.y;
     boardEl.appendChild(dot);
   }
-
-  renderLastMoveArrow();
-}
-
-function renderLastMoveArrow() {
-  if (!lastMove) {
-    lastMoveArrow.classList.remove("active");
-    return;
-  }
-  const sx = 50 + lastMove.from.x * 100;
-  const sy = 50 + lastMove.from.y * 100;
-  const ex = 50 + lastMove.to.x * 100;
-  const ey = 50 + lastMove.to.y * 100;
-  lastMoveArrow.setAttribute("x1", sx);
-  lastMoveArrow.setAttribute("y1", sy);
-  lastMoveArrow.setAttribute("x2", ex);
-  lastMoveArrow.setAttribute("y2", ey);
-  lastMoveArrow.classList.add("active");
 }
 
 function updateStatus() {

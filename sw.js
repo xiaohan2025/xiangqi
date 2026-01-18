@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = "xiangqi-helper-v10-network-first";
+﻿const CACHE_NAME = "xiangqi-helper-v11-trace-highlight";
 const ASSETS = [
   "/",
   "index.html",
