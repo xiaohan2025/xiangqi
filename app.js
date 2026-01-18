@@ -445,7 +445,8 @@ function initEngine() {
   try {
     engineWorker = new Worker("engine/stockfish.js");
     engineWorker.onerror = () => {
-      engineStatusEl.textContent = "引擎状态：加载失败，使用备用 AI";
+      engineStatusEl.textContent = "引擎加载失败";
+      suggestionEl.textContent = "请通过服务器访问（非 file:// 协议）";
       engineReady = false;
     };
     engineWorker.onmessage = (e) => {
