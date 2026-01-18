@@ -431,12 +431,17 @@ function boardToFen(b, side) {
 }
 
 function parseUciMove(str) {
-  if (!str || str.length < 4) return null;
-  const fromFile = files.indexOf(str[0]);
-  const fromRank = parseInt(str[1]);
-  const toFile = files.indexOf(str[2]);
-  const toRank = parseInt(str[3]);
-  if ([fromFile, toFile, fromRank, toRank].some(v => isNaN(v) || v < 0)) return null;
+  if (!str) return null;
+  // UCI 坐标格式: 列(a-i) + 行(0-9) + 列(a-i) + 行(0-9)
+  // 例如: "c1e3" 或 "b10c8"（虽然象棋通常是0-9，但为安全起见支持两位）
+  const match = str.match(/^([a-i])(\d+)([a-i])(\d+)/);
+  if (!match) return null;
+  const fromFile = files.indexOf(match[1]);
+  const fromRank = parseInt(match[2]);
+  const toFile = files.indexOf(match[3]);
+  const toRank = parseInt(match[4]);
+  if ([fromFile, toFile].some(v => v < 0)) return null;
+  if ([fromRank, toRank].some(v => isNaN(v) || v < 0 || v > 9)) return null;
   return { from: { x: fromFile, y: fromRank }, to: { x: toFile, y: toRank } };
 }
 
