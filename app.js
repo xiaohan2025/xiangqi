@@ -524,15 +524,15 @@ function parseUciMove(str) {
   };
 }
 
-let stockfish = null;
+let pikafish = null;
 
 async function initEngine() {
-  engineStatusEl.textContent = "引擎状态：加载中...";
+  engineStatusEl.textContent = "引擎状态：加载皮卡鱼中...";
 
   try {
-    // 动态加载 Stockfish 脚本
+    // 动态加载 Pikafish 脚本
     const script = document.createElement("script");
-    script.src = "engine/stockfish.js";
+    script.src = "engine/pikafish.js";
 
     await new Promise((resolve, reject) => {
       script.onload = resolve;
@@ -540,52 +540,24 @@ async function initEngine() {
       document.head.appendChild(script);
     });
 
-    // 调用 Stockfish 工厂函数
-    stockfish = await Stockfish();
-
-    // 添加消息监听器
-    stockfish.addMessageListener((line) => {
-      if (line === "uciok") {
-        stockfish.postMessage("setoption name UCI_Variant value xiangqi");
-        stockfish.postMessage("setoption name Threads value 4");
-        stockfish.postMessage("setoption name Contempt value 0"); // 客观模式：精准评估
-        stockfish.postMessage("isready");
-      } else if (line === "readyok") {
-        engineReady = true;
-        engineStatusEl.textContent = "引擎状态：Fairy-Stockfish 已就绪";
-        updateAnalysis();
-      } else if (line.startsWith("info") && line.includes("score")) {
-        const m = line.match(/score (cp|mate) (-?\d+)/);
-        if (m) {
-          let sc = parseInt(m[2]);
-          if (m[1] === "mate") sc = sc > 0 ? 100000 : -100000;
-          // 暂存分数，等 bestmove 后再更新胜率
-          engineScore = sc;
-        }
-      } else if (line.startsWith("bestmove")) {
-        // 只在红方回合处理结果（防止使用旧分析）
-        if (turn !== "red") return;
-
-        const moveStr = line.split(" ")[1];
-        if (moveStr) {
-          const m = parseUciMove(moveStr);
-          if (m && board[m.from.y] && board[m.from.y][m.from.x]) {
-            const piece = board[m.from.y][m.from.x];
-            // 确保是红方棋子
-            if (getPieceColor(piece) !== "red") return;
-
-            const label = pieceLabels[piece] || "?";
-            suggestionEl.textContent = `建议：${label} (${m.from.x + 1},${m.from.y + 1}) → (${m.to.x + 1},${m.to.y + 1})`;
-            aiSuggestion = { move: m, score: engineScore };
-            // 只在 bestmove 后更新胜率，使用最终分数
-            updateWinrate(engineScore);
-          }
-        }
+    // 配置 Pikafish
+    const pikafishConfig = {
+      onReceiveStdout: (line) => {
+        handleEngineMessage(line);
+      },
+      onReceiveStderr: (line) => {
+        console.error("Pikafish stderr:", line);
+      },
+      locateFile: (file) => {
+        return "engine/" + file;
       }
-    });
+    };
+
+    // 调用 Pikafish 工厂函数
+    pikafish = await Pikafish(pikafishConfig);
 
     // 启动 UCI 协议
-    stockfish.postMessage("uci");
+    pikafish.sendCommand("uci");
 
   } catch (err) {
     console.error("引擎加载失败:", err);
@@ -594,20 +566,58 @@ async function initEngine() {
   }
 }
 
+function handleEngineMessage(line) {
+  if (line === "uciok") {
+    pikafish.sendCommand("setoption name Threads value 4");
+    pikafish.sendCommand("isready");
+  } else if (line === "readyok") {
+    engineReady = true;
+    engineStatusEl.textContent = "引擎状态：皮卡鱼已就绪";
+    updateAnalysis();
+  } else if (line.startsWith("info") && line.includes("score")) {
+    const m = line.match(/score (cp|mate) (-?\d+)/);
+    if (m) {
+      let sc = parseInt(m[2]);
+      if (m[1] === "mate") sc = sc > 0 ? 100000 : -100000;
+      // 暂存分数，等 bestmove 后再更新胜率
+      engineScore = sc;
+    }
+  } else if (line.startsWith("bestmove")) {
+    // 只在红方回合处理结果（防止使用旧分析）
+    if (turn !== "red") return;
+
+    const moveStr = line.split(" ")[1];
+    if (moveStr) {
+      const m = parseUciMove(moveStr);
+      if (m && board[m.from.y] && board[m.from.y][m.from.x]) {
+        const piece = board[m.from.y][m.from.x];
+        // 确保是红方棋子
+        if (getPieceColor(piece) !== "red") return;
+
+        const label = pieceLabels[piece] || "?";
+        suggestionEl.textContent = `建议：${label} (${m.from.x + 1},${m.from.y + 1}) → (${m.to.x + 1},${m.to.y + 1})`;
+        aiSuggestion = { move: m, score: engineScore };
+        // 只在 bestmove 后更新胜率，使用最终分数
+        updateWinrate(engineScore);
+      }
+    }
+  }
+}
+
 function requestEngineMove(fen) {
-  if (!stockfish || !engineReady) return;
-  stockfish.postMessage("stop");
-  stockfish.postMessage("ucinewgame");
+  if (!pikafish || !engineReady) return;
+  pikafish.sendCommand("stop");
+  pikafish.sendCommand("ucinewgame");
 
   // 使用开局FEN + 历史走法，让引擎能检测重复局面
   if (moveHistory.length > 0) {
     const startFen = "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1";
-    stockfish.postMessage("position fen " + startFen + " moves " + moveHistory.join(" "));
+    pikafish.sendCommand("position fen " + startFen + " moves " + moveHistory.join(" "));
   } else {
-    stockfish.postMessage("position fen " + fen);
+    pikafish.sendCommand("position fen " + fen);
   }
 
-  stockfish.postMessage(`go depth ${ENGINE_DEPTH} movetime ${ENGINE_MOVETIME}`);
+  pikafish.sendCommand(`go depth ${ENGINE_DEPTH} movetime ${ENGINE_MOVETIME}`);
 }
 
 // ==================== 事件监听 ====================

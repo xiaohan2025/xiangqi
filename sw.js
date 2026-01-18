@@ -1,14 +1,13 @@
-﻿const CACHE_NAME = "xiangqi-helper-v15-restore";
+﻿const CACHE_NAME = "xiangqi-helper-v16-pikafish";
 const ASSETS = [
   "/",
   "index.html",
   "styles.css",
   "app.js",
   "manifest.json",
-  "engine/stockfish.js",
-  "engine/stockfish.worker.js",
-  "engine/stockfish.wasm",
-  "engine/uci.js",
+  "engine/pikafish.js",
+  "engine/pikafish.wasm",
+  "engine/pikafish.data",
   "icons/icon-192.png",
   "icons/icon-512.png"
 ];
