@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = "xiangqi-helper-v8-winrate-fix";
+﻿const CACHE_NAME = "xiangqi-helper-v10-network-first";
 const ASSETS = [
   "/",
   "index.html",
@@ -33,17 +33,22 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+
+  // Network-First 策略：优先网络，失败时才用缓存
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          return response;
-        })
-        .catch(() => caches.match("/"));
-    })
+    fetch(event.request)
+      .then((response) => {
+        // 成功获取网络资源，更新缓存
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        return response;
+      })
+      .catch(() => {
+        // 网络失败，尝试用缓存
+        return caches.match(event.request).then((cached) => {
+          return cached || caches.match("/");
+        });
+      })
   );
 });
 

@@ -13,7 +13,7 @@ const aiMoveBtn = document.getElementById("aiMove");
 const undoBtn = document.getElementById("undo");
 
 const ENGINE_DEPTH = 17;
-const ENGINE_MOVETIME = 20000; // 20秒
+const ENGINE_MOVETIME = 10000; // 10秒
 
 
 
