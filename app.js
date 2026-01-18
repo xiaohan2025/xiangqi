@@ -39,6 +39,7 @@ let lastMove = null;
 let engineReady = false;
 let engineScore = 0;
 let moveHistory = []; // UCI格式的走法历史，用于避免循环
+let savedGameState = null; // 保存重置前的状态，用于恢复
 
 const files = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
 
@@ -294,19 +295,52 @@ function handleUndo() {
 }
 
 function resetGame() {
+  // 保存当前状态，以便恢复
+  savedGameState = {
+    board: cloneBoard(board),
+    turn: turn,
+    history: history.map(h => ({ board: cloneBoard(h.board), turn: h.turn, lastMove: h.lastMove })),
+    moveHistory: [...moveHistory],
+    lastMove: lastMove,
+    engineScore: engineScore
+  };
+
   board = createInitialBoard();
   turn = nextGameTurn;
   history = [];
-  moveHistory = []; // 清空走法历史
+  moveHistory = [];
   selected = null;
   legalMoves = [];
   aiSuggestion = null;
   lastMove = null;
   engineScore = 0;
-  updateWinrate(0); // 重置胜率为 50%
+  updateWinrate(0);
   updateStatus();
   renderBoard();
   updateAnalysis();
+}
+
+function restoreGame() {
+  if (!savedGameState) {
+    suggestionEl.textContent = "没有可恢复的棋局";
+    return;
+  }
+
+  board = cloneBoard(savedGameState.board);
+  turn = savedGameState.turn;
+  history = savedGameState.history.map(h => ({ board: cloneBoard(h.board), turn: h.turn, lastMove: h.lastMove }));
+  moveHistory = [...savedGameState.moveHistory];
+  lastMove = savedGameState.lastMove;
+  engineScore = savedGameState.engineScore;
+  selected = null;
+  legalMoves = [];
+  aiSuggestion = null;
+
+  updateWinrate(engineScore);
+  updateStatus();
+  renderBoard();
+  updateAnalysis();
+  suggestionEl.textContent = "已恢复上一局棋局";
 }
 
 function handleAiMove() {
@@ -659,6 +693,7 @@ if (mobileStartBlack) {
 restartBtn.addEventListener("click", resetGame);
 undoBtn.addEventListener("click", handleUndo);
 aiMoveBtn.addEventListener("click", handleAiMove);
+document.getElementById("restoreBtn")?.addEventListener("click", restoreGame);
 
 // 注册 Service Worker
 
