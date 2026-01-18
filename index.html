@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,10 +9,12 @@
   <link rel="icon" href="icons/icon-192.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Space+Grotesk:wght@400;600&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <title>象棋对弈辅助</title>
 </head>
+
 <body>
   <div class="app">
     <header class="app-header">
@@ -19,6 +22,14 @@
     </header>
 
     <main class="layout">
+      <!-- 手机端：切换按钮放在棋盘上方 -->
+      <div class="mobile-toggle-area">
+        <div class="toggle-group">
+          <button id="mobileStartRed" class="btn toggle active">我先走</button>
+          <button id="mobileStartBlack" class="btn toggle">对方先走</button>
+        </div>
+      </div>
+
       <section class="board-wrap">
         <div id="board" class="board">
           <svg class="board-grid" viewBox="0 0 900 1000" aria-hidden="true">
@@ -35,7 +46,7 @@
               <line x1="50" y1="750" x2="850" y2="750" />
               <line x1="50" y1="850" x2="850" y2="850" />
               <line x1="50" y1="950" x2="850" y2="950" />
-              
+
               <!-- Vertical Lines (Outer) -->
               <line x1="50" y1="50" x2="50" y2="950" />
               <line x1="850" y1="50" x2="850" y2="950" />
@@ -71,7 +82,8 @@
           </svg>
           <svg class="board-overlay" viewBox="0 0 900 1000" aria-hidden="true">
             <defs>
-              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6"
+                orient="auto-start-reverse">
                 <path d="M 0 0 L 10 5 L 0 10 z" />
               </marker>
             </defs>
@@ -81,7 +93,8 @@
       </section>
 
       <aside class="panel">
-        <div class="panel-section">
+        <!-- 电脑端：切换按钮 -->
+        <div class="panel-section desktop-toggle">
           <label class="section-label">谁先走?</label>
           <div class="toggle-group">
             <button id="startRed" class="btn toggle active">我先走</button>
@@ -90,16 +103,14 @@
           <p class="subtext">你执红方，对方执黑方</p>
         </div>
 
-        <div class="panel-section">
-          <label class="section-label">当前状态</label>
-          <div class="status-card">
-            <h2 id="statusText">红方走棋</h2>
+        <!-- 合并：状态 + AI建议 -->
+        <div class="panel-section status-ai-combined">
+          <div class="status-row">
+            <span class="status-label">当前状态：</span>
+            <span id="statusText">红方走棋</span>
           </div>
-        </div>
-
-        <div class="panel-section">
-          <div class="ai-box">
-             <div id="suggestion">AI 建议：等待分析...</div>
+          <div class="ai-row">
+            <span id="suggestion">AI 建议：等待分析...</span>
           </div>
         </div>
 
@@ -118,7 +129,7 @@
           <button id="undo" class="btn secondary">悔棋</button>
           <button id="aiMove" class="btn secondary">AI 帮我走</button>
         </div>
-        
+
         <div id="engineStatus" class="engine-status-tiny">引擎状态：初始化中</div>
       </aside>
     </main>
@@ -126,4 +137,5 @@
 
   <script src="app.js" defer></script>
 </body>
+
 </html>

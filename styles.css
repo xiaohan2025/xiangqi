@@ -310,6 +310,45 @@ body {
   margin-top: 10px;
 }
 
+/* 手机端切换按钮区域 - 默认隐藏 */
+.mobile-toggle-area {
+  display: none;
+}
+
+/* 合并的状态 + AI 区域 */
+.status-ai-combined {
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.status-row .status-label {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+#statusText {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.ai-row {
+  color: var(--green);
+  font-size: 14px;
+  padding-top: 8px;
+  border-top: 1px solid #333;
+}
+
+/* 平板竖屏（小于 900px） */
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;
@@ -319,5 +358,150 @@ body {
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
+  }
+}
+
+/* 手机端（小于 600px） */
+@media (max-width: 600px) {
+  .app {
+    padding: 12px;
+  }
+
+  .app-header {
+    margin-bottom: 16px;
+  }
+
+  .app-header h1 {
+    font-size: 20px;
+    letter-spacing: 1px;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .board {
+    width: 100%;
+    max-width: none;
+  }
+
+  .piece {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .legal-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .river-text {
+    font-size: 24px;
+  }
+
+  /* 侧边栏变成底部栏 */
+  .panel {
+    gap: 12px;
+    padding-top: 8px;
+    max-width: 100%;
+  }
+
+  .panel-section {
+    gap: 6px;
+  }
+
+  .section-label {
+    font-size: 12px;
+  }
+
+  /* 手机端：显示棋盘上方的切换按钮 */
+  .mobile-toggle-area {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  /* 手机端：隐藏侧边栏的切换按钮 */
+  .desktop-toggle {
+    display: none;
+  }
+
+  /* 状态+AI合并区域在手机上更紧凑 */
+  .status-ai-combined {
+    padding: 10px 12px;
+  }
+
+  .status-row {
+    margin-bottom: 6px;
+  }
+
+  .status-row .status-label {
+    font-size: 12px;
+  }
+
+  #statusText {
+    font-size: 14px;
+  }
+
+  .ai-row {
+    font-size: 12px;
+    padding-top: 6px;
+  }
+
+  /* 切换按钮组 */
+  .toggle-group {
+    padding: 3px;
+  }
+
+  .btn.toggle {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  /* 状态文字 */
+  #statusText {
+    font-size: 16px;
+  }
+
+  /* AI 建议框 */
+  .ai-box {
+    padding: 10px 12px;
+    font-size: 13px;
+    min-height: 38px;
+  }
+
+  /* 胜率区域 */
+  .winrate-container {
+    padding: 12px;
+  }
+
+  .bar {
+    height: 10px;
+  }
+
+  .winrate-text {
+    font-size: 11px;
+  }
+
+  /* 操作按钮 */
+  .action-buttons {
+    margin-top: 12px;
+    gap: 10px;
+  }
+
+  .btn.primary {
+    font-size: 15px;
+    padding: 14px;
+  }
+
+  .btn.secondary {
+    font-size: 13px;
+    padding: 12px;
+  }
+
+  .engine-status-tiny {
+    font-size: 11px;
+    margin-top: 6px;
   }
 }

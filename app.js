@@ -568,6 +568,11 @@ startRedBtn.addEventListener("click", () => {
   nextGameTurn = "red";
   startRedBtn.classList.add("active");
   startBlackBtn.classList.remove("active");
+  // 同步移动端按钮状态
+  const mobileRed = document.getElementById("mobileStartRed");
+  const mobileBlack = document.getElementById("mobileStartBlack");
+  if (mobileRed) mobileRed.classList.add("active");
+  if (mobileBlack) mobileBlack.classList.remove("active");
   resetGame();
 });
 
@@ -575,8 +580,39 @@ startBlackBtn.addEventListener("click", () => {
   nextGameTurn = "black";
   startBlackBtn.classList.add("active");
   startRedBtn.classList.remove("active");
+  // 同步移动端按钮状态
+  const mobileRed = document.getElementById("mobileStartRed");
+  const mobileBlack = document.getElementById("mobileStartBlack");
+  if (mobileRed) mobileRed.classList.remove("active");
+  if (mobileBlack) mobileBlack.classList.add("active");
   resetGame();
 });
+
+// 移动端切换按钮事件
+const mobileStartRed = document.getElementById("mobileStartRed");
+const mobileStartBlack = document.getElementById("mobileStartBlack");
+
+if (mobileStartRed) {
+  mobileStartRed.addEventListener("click", () => {
+    nextGameTurn = "red";
+    mobileStartRed.classList.add("active");
+    mobileStartBlack.classList.remove("active");
+    startRedBtn.classList.add("active");
+    startBlackBtn.classList.remove("active");
+    resetGame();
+  });
+}
+
+if (mobileStartBlack) {
+  mobileStartBlack.addEventListener("click", () => {
+    nextGameTurn = "black";
+    mobileStartBlack.classList.add("active");
+    mobileStartRed.classList.remove("active");
+    startBlackBtn.classList.add("active");
+    startRedBtn.classList.remove("active");
+    resetGame();
+  });
+}
 
 restartBtn.addEventListener("click", resetGame);
 undoBtn.addEventListener("click", handleUndo);
