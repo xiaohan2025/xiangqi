@@ -15,13 +15,7 @@ const undoBtn = document.getElementById("undo");
 const ENGINE_DEPTH = 17;
 const ENGINE_MOVETIME = 30000;
 
-// AI 风格配置（Contempt 值）
-const AI_STYLES = {
-  aggressive: { contempt: 80, name: "激进" },  // 速战速决，宁冒险也要进攻
-  balanced: { contempt: 0, name: "平衡" },  // 客观最优解
-  defensive: { contempt: -50, name: "稳健" }  // 稳扎稳打，不冒险
-};
-let currentAiStyle = "aggressive"; // 默认激进
+
 
 const pieceLabels = {
   r: "车", n: "马", b: "象", a: "士", k: "将", c: "炮", p: "卒",
@@ -498,7 +492,7 @@ async function initEngine() {
       if (line === "uciok") {
         stockfish.postMessage("setoption name UCI_Variant value xiangqi");
         stockfish.postMessage("setoption name Threads value 1");
-        stockfish.postMessage(`setoption name Contempt value ${AI_STYLES[currentAiStyle].contempt}`);
+        stockfish.postMessage("setoption name Contempt value 50"); // 杀手模式：更激进，速战速决
         stockfish.postMessage("isready");
       } else if (line === "readyok") {
         engineReady = true;
@@ -630,37 +624,7 @@ restartBtn.addEventListener("click", resetGame);
 undoBtn.addEventListener("click", handleUndo);
 aiMoveBtn.addEventListener("click", handleAiMove);
 
-// ==================== AI 风格切换 ====================
-
-function setAiStyle(style) {
-  if (!AI_STYLES[style]) return;
-  currentAiStyle = style;
-
-  // 更新按钮状态
-  document.getElementById("styleAggressive").classList.toggle("active", style === "aggressive");
-  document.getElementById("styleBalanced").classList.toggle("active", style === "balanced");
-  document.getElementById("styleDefensive").classList.toggle("active", style === "defensive");
-
-  // 如果引擎已就绪，更新设置
-  if (stockfish && engineReady) {
-    stockfish.postMessage(`setoption name Contempt value ${AI_STYLES[style].contempt}`);
-
-    // 开局阶段（没走过棋）：只切换模式，不重新分析，保持 50%
-    if (history.length === 0) {
-      suggestionEl.textContent = `已切换为「${AI_STYLES[style].name}」模式`;
-      updateWinrate(0); // 保持 50%
-    } else {
-      // 已经开始下棋：重新分析
-      suggestionEl.textContent = `已切换为「${AI_STYLES[style].name}」模式，重新分析中...`;
-      updateAnalysis();
-    }
-  }
-}
-
-// 风格切换按钮事件
-document.getElementById("styleAggressive")?.addEventListener("click", () => setAiStyle("aggressive"));
-document.getElementById("styleBalanced")?.addEventListener("click", () => setAiStyle("balanced"));
-document.getElementById("styleDefensive")?.addEventListener("click", () => setAiStyle("defensive"));
+// 注册 Service Worker
 
 // 注册 Service Worker
 if ("serviceWorker" in navigator) {

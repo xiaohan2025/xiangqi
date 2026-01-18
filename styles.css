@@ -518,15 +518,7 @@ body {
     font-size: 13px;
   }
 
-  /* AI 风格切换按钮 - 手机端紧凑版 */
-  .style-toggle {
-    gap: 2px;
-  }
 
-  .style-toggle .btn.toggle {
-    padding: 6px 4px;
-    font-size: 11px;
-  }
 
   .legal-dot {
     width: 10px;
