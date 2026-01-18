@@ -12,9 +12,9 @@ const restartBtn = document.getElementById("restartBtn");
 const aiMoveBtn = document.getElementById("aiMove");
 const undoBtn = document.getElementById("undo");
 
-const ENGINE_DEPTH = 17;
-// 设备检测：平板/手机用更长的思考时间
+// 设备检测：平板/手机用较浅深度和更长思考时间
 const isMobile = window.innerWidth <= 1024;
+const ENGINE_DEPTH = isMobile ? 15 : 17; // 手机平板15层，电脑17层
 const ENGINE_MOVETIME = isMobile ? 20000 : 10000; // 手机平板20秒，电脑10秒
 
 
