@@ -291,6 +291,7 @@ function resetGame() {
   aiSuggestion = null;
   lastMove = null;
   engineScore = 0;
+  updateWinrate(0); // 重置胜率为 50%
   updateStatus();
   renderBoard();
   updateAnalysis();
@@ -499,8 +500,8 @@ async function initEngine() {
         if (m) {
           let sc = parseInt(m[2]);
           if (m[1] === "mate") sc = sc > 0 ? 100000 : -100000;
-          engineScore = turn === "red" ? sc : -sc;
-          updateWinrate(engineScore);
+          // 暂存分数，等 bestmove 后再更新胜率
+          engineScore = sc;
         }
       } else if (line.startsWith("bestmove")) {
         const moveStr = line.split(" ")[1];
@@ -511,6 +512,8 @@ async function initEngine() {
             const label = pieceLabels[piece] || "?";
             suggestionEl.textContent = `建议：${label} (${m.from.x + 1},${m.from.y + 1}) → (${m.to.x + 1},${m.to.y + 1})`;
             aiSuggestion = { move: m, score: engineScore };
+            // 只在 bestmove 后更新胜率，使用最终分数
+            updateWinrate(engineScore);
           }
         }
       }

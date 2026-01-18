@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Space+Grotesk:wght@400;600&display=swap"
     rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=3" />
+  <link rel="stylesheet" href="styles.css?v=4" />
   <title>象棋对弈辅助</title>
 </head>
 
@@ -33,8 +33,9 @@
       <section class="board-wrap">
         <div id="board" class="board">
           <svg class="board-grid" viewBox="0 0 900 1000" aria-hidden="true">
-            <rect x="0" y="0" width="900" height="1000" rx="20" fill="#1e1e1e" />
-            <g class="grid-lines">
+            <!-- 背景设为透明，显示 CSS 背景 -->
+            <rect x="0" y="0" width="900" height="1000" rx="20" fill="transparent" />
+            <g class="grid-lines" stroke="rgba(212, 175, 55, 0.4)" stroke-width="2">
               <!-- Horizontal Lines -->
               <line x1="50" y1="50" x2="850" y2="50" />
               <line x1="50" y1="150" x2="850" y2="150" />
@@ -76,8 +77,10 @@
               <line x1="550" y1="750" x2="350" y2="950" />
             </g>
             <g class="river">
-              <text x="250" y="500" class="river-text">楚 河</text>
-              <text x="650" y="500" class="river-text">漢 界</text>
+              <text x="250" y="500" class="river-text" fill="rgba(212, 175, 55, 0.3)" font-family="'KaiTi', serif"
+                font-weight="bold" letter-spacing="10">楚 河</text>
+              <text x="650" y="500" class="river-text" fill="rgba(212, 175, 55, 0.3)" font-family="'KaiTi', serif"
+                font-weight="bold" letter-spacing="10">漢 界</text>
             </g>
           </svg>
           <svg class="board-overlay" viewBox="0 0 900 1000" aria-hidden="true">
@@ -141,7 +144,7 @@
   </main>
   </div>
 
-  <script src="app.js?v=3" defer></script>
+  <script src="app.js?v=4" defer></script>
 </body>
 
 </html>
