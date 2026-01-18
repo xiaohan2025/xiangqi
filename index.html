@@ -103,11 +103,17 @@
           <p class="subtext">你执红方，对方执黑方</p>
         </div>
 
-        <!-- 合并：状态 + AI建议 -->
+        <!-- 合并：状态 + AI建议 + AI按钮 -->
         <div class="panel-section status-ai-combined">
           <div class="status-row">
             <span class="status-label">当前状态：</span>
             <span id="statusText">红方走棋</span>
+            <button id="aiMove" class="ai-icon-btn" title="AI 帮我走">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+              </svg>
+            </button>
           </div>
           <div class="ai-row">
             <span id="suggestion">AI 建议：等待分析...</span>
@@ -127,12 +133,12 @@
         <div class="action-buttons">
           <button id="restartBtn" class="btn primary large">重新开始</button>
           <button id="undo" class="btn secondary">悔棋</button>
-          <button id="aiMove" class="btn secondary">AI 帮我走</button>
         </div>
+  </div>
 
-        <div id="engineStatus" class="engine-status-tiny">引擎状态：初始化中</div>
-      </aside>
-    </main>
+  <div id="engineStatus" class="engine-status-tiny">引擎状态：初始化中</div>
+  </aside>
+  </main>
   </div>
 
   <script src="app.js" defer></script>

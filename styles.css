@@ -59,8 +59,8 @@ body {
 
 .board {
   position: relative;
-  width: min(100%, 650px);
-  /* 限制最大宽度 */
+  width: min(100%, 520px);
+  /* 限制最大宽度，确保平板横屏能完整显示 */
   aspect-ratio: 9 / 10;
   background: var(--board);
   border-radius: 8px;
@@ -339,6 +339,117 @@ body {
   color: var(--text);
   font-weight: 600;
   font-size: 16px;
+  flex: 1;
+}
+
+/* AI 图标按钮 - 炫酷版 */
+.ai-icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--green);
+  background: rgba(66, 210, 124, 0.1);
+  color: var(--green);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  flex-shrink: 0;
+  box-shadow: 0 0 10px rgba(66, 210, 124, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 呼吸动画 */
+@keyframes pulse-green {
+  0% {
+    box-shadow: 0 0 0 0 rgba(66, 210, 124, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(66, 210, 124, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(66, 210, 124, 0);
+  }
+}
+
+.ai-icon-btn:not(:disabled) {
+  animation: pulse-green 2s infinite;
+}
+
+.ai-icon-btn:hover {
+  background: var(--green);
+  color: #000;
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(66, 210, 124, 0.6);
+}
+
+.ai-icon-btn:active {
+  transform: scale(0.95);
+}
+
+.ai-icon-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  animation: none;
+  filter: grayscale(100%);
+}
+
+.ai-icon-btn svg {
+  width: 20px;
+  height: 20px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* 优化通用按钮 */
+.btn {
+  border: none;
+  border-radius: 8px;
+  /* 圆角稍微加大 */
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:active {
+  transform: scale(0.98);
+  /* 按压效果 */
+}
+
+.btn.primary {
+  /* 渐变背景 */
+  background: linear-gradient(135deg, var(--green) 0%, #2a9d5c 100%);
+  color: #fff;
+  font-size: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 15px rgba(66, 210, 124, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.btn.primary:hover {
+  background: linear-gradient(135deg, #4ceea0 0%, #36b068 100%);
+  box-shadow: 0 6px 20px rgba(66, 210, 124, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn.secondary {
+  background: #333;
+  color: var(--text);
+  font-size: 14px;
+  padding: 14px;
+  border: 1px solid #444;
+}
+
+.btn.secondary:hover {
+  background: #444;
+  border-color: #555;
+  color: #fff;
 }
 
 .ai-row {
